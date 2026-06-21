@@ -1,5 +1,7 @@
 import os
 from services.pdf_service import PDFService
+from services.summary_service import SummaryService
+from services.rag_service import RAGService
 
 from flask import (
     Blueprint,
@@ -53,7 +55,16 @@ def home():
             filepath = os.path.join(upload_folder, filename)
 
             file.save(filepath)
+
             raw_text = PDFService.extract_text(filepath)
+            summary = SummaryService.generate_summary(raw_text)
+
+            chunk_count = RAGService.create_vector_store(raw_text)
+
+            flash(
+                f"PDF processed successfully ({chunk_count} chunks created).",
+                "success"
+            )
 
             flash("PDF uploaded successfully!", "success")
 
@@ -61,6 +72,7 @@ def home():
                 "index.html",
                 uploaded_file=filename,
                 extracted_text=raw_text,
+                summary=summary,
             )
 
         flash("Only PDF files are allowed.", "danger")
