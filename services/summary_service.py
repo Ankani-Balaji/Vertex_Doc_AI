@@ -19,25 +19,41 @@ class SummaryService:
             return "No content available."
 
         prompt = f"""
-You are an intelligent document assistant.
+    You are an intelligent document assistant.
 
-Generate a professional summary of the following document.
+    Generate a structured summary using this format:
 
-Rules:
-- Maximum 150 words
-- Use simple English
-- Mention the main purpose
-- Mention important topics
-- Do not invent information
+    Overview:
+    (2-3 sentences)
 
-Document:
+    Key Points:
+    • Point 1
+    • Point 2
+    • Point 3
 
-{text[:12000]}
-"""
+    Important Information:
+    • Item 1
+    • Item 2
 
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=prompt
-        )
+    Keep it under 150 words.
 
-        return response.text
+    Document:
+
+    {text[:12000]}
+    """
+
+        try:
+
+            response = client.models.generate_content(
+                model="gemini-2.5-flash",
+                contents=prompt
+            )
+
+            return response.text
+
+        except Exception:
+
+            return (
+                "⚠ AI Summary is temporarily unavailable because "
+                "the Gemini API quota has been reached."
+            )

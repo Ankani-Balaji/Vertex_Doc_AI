@@ -1,7 +1,26 @@
-venv/
-.env
+# Python
 __pycache__/
 *.pyc
-uploads/*
-vector_store/*
-instance/*
+
+# Virtual Environment
+venv/
+
+# Environment Variables
+.env
+
+# Uploaded Files
+uploads/
+
+# Vector Database
+vector_store/
+
+# VS Code
+.vscode/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Generated Files
+conversation.pdf
+conversation.txt

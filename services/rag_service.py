@@ -5,7 +5,7 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_huggingface import HuggingFaceEmbeddings
 
-VECTOR_PATH = "vector_store"
+VECTOR_ROOT = "vector_store"
 
 embedding_model = HuggingFaceEmbeddings(
     model_name="sentence-transformers/all-MiniLM-L6-v2"
@@ -15,7 +15,7 @@ embedding_model = HuggingFaceEmbeddings(
 class RAGService:
 
     @staticmethod
-    def create_vector_store(text):
+    def create_vector_store(text, session_id):
 
         splitter = RecursiveCharacterTextSplitter(
             chunk_size=1000,
@@ -24,37 +24,54 @@ class RAGService:
 
         chunks = splitter.split_text(text)
 
+        if not chunks:
+            return 0
+
+
         vector_store = FAISS.from_texts(
             texts=chunks,
             embedding=embedding_model
         )
 
-        os.makedirs(VECTOR_PATH, exist_ok=True)
+        session_path = os.path.join(
+            VECTOR_ROOT,
+            session_id
+        )
 
-        vector_store.save_local(VECTOR_PATH)
+        os.makedirs(session_path, exist_ok=True)
+
+        vector_store.save_local(session_path)
 
         return len(chunks)
 
     @staticmethod
-    def load_vector_store():
+    def load_vector_store(session_id):
 
-        if not os.path.exists(VECTOR_PATH):
+        session_path = os.path.join(
+            VECTOR_ROOT,
+            session_id
+        )
+
+        if not os.path.exists(session_path):
             return None
 
         return FAISS.load_local(
-            VECTOR_PATH,
+            session_path,
             embedding_model,
             allow_dangerous_deserialization=True
         )
 
     @staticmethod
-    def search(question):
+    def search(question, session_id):
 
-        db = RAGService.load_vector_store()
+        db = RAGService.load_vector_store(session_id)
 
         if db is None:
             return []
 
-        docs = db.similarity_search(question, k=4)
+        docs = db.similarity_search_with_score(
+            question,
+            k=3
+        )
 
         return docs

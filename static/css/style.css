@@ -1,0 +1,77 @@
+body {
+  background: #f4f6f9;
+}
+
+.card {
+  border: none;
+
+  border-radius: 15px;
+}
+
+.chat-box {
+  max-height: 400px;
+
+  overflow-y: auto;
+}
+
+.preview-box {
+  max-height: 350px;
+
+  overflow-y: auto;
+
+  white-space: pre-wrap;
+}
+
+.question {
+  background: #e8f0fe;
+
+  padding: 12px;
+
+  border-radius: 10px;
+
+  margin-bottom: 10px;
+}
+
+.answer {
+  background: #f1f8e9;
+
+  padding: 12px;
+
+  border-radius: 10px;
+
+  margin-bottom: 20px;
+}
+.loader-overlay {
+
+    display: none;
+
+    position: fixed;
+
+    top: 0;
+    left: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    background: rgba(255,255,255,0.85);
+
+    justify-content: center;
+    align-items: center;
+
+    z-index: 999999;
+
+}
+
+.loader-box {
+
+    background: #ffffff;
+
+    padding: 30px;
+
+    border-radius: 15px;
+
+    text-align: center;
+
+    box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+
+}

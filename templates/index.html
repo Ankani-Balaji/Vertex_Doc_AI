@@ -1,62 +1,370 @@
-{% extends "base.html" %} {% block content %}
+{% extends "base.html" %}
+
+{% block content %}
+
+<!-- Upload Card -->
 
 <div class="card shadow-lg p-4">
-  <h2 class="text-center mb-4">Upload Your PDF</h2>
 
-  <form method="POST" enctype="multipart/form-data">
-    <input
-      type="file"
-      class="form-control mb-3"
-      name="pdf_file"
-      accept=".pdf"
-      required
-    />
+    <h2 class="text-center mb-4">
 
-    <button class="btn btn-primary w-100">Upload PDF</button>
-  </form>
+        📄 VertexDoc AI - Intelligent Document Assistant
+
+    </h2>
+
+    <form action="/upload"
+          method="POST"
+          enctype="multipart/form-data">
+
+        <input
+            type="file"
+            class="form-control mb-3"
+            name="pdf_file"
+            accept=".pdf"
+            required>
+
+        <button class="btn btn-primary w-100">
+
+            Upload & Analyze Document
+
+        </button>
+
+    </form>
+
 </div>
+
+
+<!-- Uploaded Document -->
 
 {% if uploaded_file %}
 
-<div class="card mt-4 shadow">
-  <div class="card-body">
-    <h5>Uploaded Document</h5>
-    {% if extracted_text %}
+<div class="card shadow mt-4">
 
-    <div class="card mt-4 shadow">
-      <div class="card-body">
-        <h4>Extracted Text Preview</h4>
+    <div class="card-body">
 
-        <hr />
+        <h4 class="mb-3">
 
-        <div style="max-height: 300px; overflow: auto; white-space: pre-wrap">
-          {{ extracted_text[:3000] }}
+            📄 Uploaded Document
+
+        </h4>
+
+        <!-- Statistics -->
+
+        <div class="row g-3">
+
+            <div class="col-md-4">
+
+                <div class="card text-center">
+
+                    <div class="card-body">
+
+                        <h3>{{ history|length }}</h3>
+
+                        <p class="mb-0">
+
+                            Questions Asked
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="card text-center">
+
+                    <div class="card-body">
+
+                        <h3>{{ extracted_text|length }}</h3>
+
+                        <p class="mb-0">
+
+                            Characters
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+            <div class="col-md-4">
+
+                <div class="card text-center">
+
+                    <div class="card-body">
+
+                        <h3>AI</h3>
+
+                        <p class="mb-0">
+
+                            Powered by Gemini
+
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
         </div>
-      </div>
+
+        <div class="alert alert-info mt-4">
+
+            <strong>File :</strong>
+
+            {{ uploaded_file }}
+
+        </div>
+
+        {% if extracted_text %}
+
+        <div class="card mt-3">
+
+            <div class="card-body">
+
+                <h5>
+
+                    Extracted Text Preview
+
+                </h5>
+
+                <hr>
+
+                <div class="preview-box">
+
+                    {{ extracted_text[:3000] }}
+
+                </div>
+
+            </div>
+
+        </div>
+
+        {% endif %}
+
     </div>
 
-    {% endif %}
-    <p class="mb-0">{{uploaded_file}}</p>
-  </div>
 </div>
 
-{% endif %} 
-{% if summary %}
+{% endif %}
+
+
+<!-- Suggested Questions -->
+
+{% if suggested_questions %}
 
 <div class="card shadow mt-4">
 
     <div class="card-header">
 
-        <h5>📝 AI Document Summary</h5>
+        💡 AI Suggested Questions
 
     </div>
 
     <div class="card-body">
 
-        <p>{{ summary }}</p>
+        {% for question in suggested_questions %}
+
+        <form action="/ask"
+              method="POST"
+              class="mb-2">
+
+            <input
+                type="hidden"
+                name="question"
+                value="{{ question }}">
+
+            <button
+                class="btn btn-outline-primary w-100 text-start">
+
+                {{ question }}
+
+            </button>
+
+        </form>
+
+        {% endfor %}
 
     </div>
 
 </div>
 
-{% endif %} {% endblock %}
+{% endif %}
+
+
+<!-- Chat -->
+
+<div class="card shadow mt-4 p-4">
+
+    <h3 class="mb-3">
+
+        🤖 Ask Questions About Your Document
+
+    </h3>
+
+    <form action="/ask"
+          method="POST">
+
+        <div class="input-group">
+
+            <input
+                type="text"
+                class="form-control"
+                name="question"
+                placeholder="Ask anything about the uploaded PDF..."
+                required>
+
+            <button
+                class="btn btn-primary">
+
+                Ask AI
+
+            </button>
+
+        </div>
+
+    </form>
+
+</div>
+
+
+<!-- Conversation -->
+
+<div class="card shadow mt-4 p-4 history-card">
+
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
+        <h3>
+
+            Recent AI Conversations
+
+        </h3>
+
+        {% if history %}
+
+        <div>
+
+            <a href="/export/pdf"
+               class="btn btn-danger btn-sm">
+
+                PDF
+
+            </a>
+
+            <a href="/export/txt"
+               class="btn btn-success btn-sm">
+
+                TXT
+
+            </a>
+
+            <a href="/clear"
+               class="btn btn-outline-danger btn-sm">
+
+                Clear
+
+            </a>
+
+        </div>
+
+        {% endif %}
+
+    </div>
+
+    {% if history %}
+
+        {% for chat in history|reverse %}
+
+        <div class="mb-3">
+
+            <div class="alert alert-primary">
+
+                <strong>You</strong><br>
+
+                {{ chat.question }}
+
+            </div>
+
+            <div class="alert alert-success">
+
+                <strong>VertexDoc AI</strong><br>
+
+                {{ chat.answer }}
+
+            </div>
+
+        </div>
+
+        <hr>
+
+        {% endfor %}
+
+    {% else %}
+
+        <p>
+
+            No conversation yet.
+
+        </p>
+
+    {% endif %}
+
+</div>
+
+
+<!-- Summary -->
+
+{% if summary %}
+
+<div class="card shadow mt-4">
+
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+
+        <h5 class="mb-0">
+
+            ✨ AI Generated Summary
+
+        </h5>
+
+        <div>
+
+            <a href="/export/pdf"
+               class="btn btn-light btn-sm">
+
+                PDF
+
+            </a>
+
+            <a href="/export/txt"
+               class="btn btn-warning btn-sm">
+
+                TXT
+
+            </a>
+
+        </div>
+
+    </div>
+
+    <div class="card-body">
+
+        <div class="preview-box">
+
+            {{ summary }}
+
+        </div>
+
+    </div>
+
+</div>
+
+{% endif %}
+
+
+{% endblock %}
