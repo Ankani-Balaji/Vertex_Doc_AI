@@ -1,0 +1,43 @@
+{% extends "base.html" %} {% block content %}
+
+<div class="card shadow-lg p-4">
+  <h2 class="text-center mb-4">Upload Your PDF</h2>
+
+  <form method="POST" enctype="multipart/form-data">
+    <input
+      type="file"
+      class="form-control mb-3"
+      name="pdf_file"
+      accept=".pdf"
+      required
+    />
+
+    <button class="btn btn-primary w-100">Upload PDF</button>
+  </form>
+</div>
+
+{% if uploaded_file %}
+
+<div class="card mt-4 shadow">
+  <div class="card-body">
+    <h5>Uploaded Document</h5>
+    {% if extracted_text %}
+
+    <div class="card mt-4 shadow">
+      <div class="card-body">
+        <h4>Extracted Text Preview</h4>
+
+        <hr />
+
+        <div style="max-height: 300px; overflow: auto; white-space: pre-wrap">
+          {{ extracted_text[:3000] }}
+        </div>
+      </div>
+    </div>
+
+    {% endif %}
+    <p class="mb-0">{{uploaded_file}}</p>
+  </div>
+</div>
+
+{% endif %} {% endblock %}
