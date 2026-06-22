@@ -77,7 +77,7 @@ class ChatService:
         try:
 
             response = client.models.generate_content(
-                model="gemini-1.5-flash",
+                model="gemini-2.5-flash",
                 contents=prompt
             )
 
