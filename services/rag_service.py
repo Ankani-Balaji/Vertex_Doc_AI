@@ -7,8 +7,10 @@ from langchain_core.embeddings import Embeddings
 
 VECTOR_ROOT = "vector_store"
 
-client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
-
+client = genai.Client(
+    api_key=os.getenv("GOOGLE_API_KEY"),
+    http_options={"api_version": "v1"}
+)
 
 class GoogleGenAIEmbeddings(Embeddings):
 
