@@ -1,3 +1,4 @@
+# question_service.py
 import os
 
 from dotenv import load_dotenv
@@ -28,50 +29,30 @@ Rules:
 
 Document:
 
-{text[:8000]}
+{text[:2000]}
 """
 
+        # Replace the try block's return with proper cleanup
         try:
-
             response = client.models.generate_content(
                 model="gemini-2.5-flash",
                 contents=prompt
             )
 
-            return [
-                line.replace("-", "").strip()
-                for line in response.text.split("\n")
-                if line.strip()
-            ]
-
-        except Exception:
-
-            return [
-
-                "What is this document about?",
-
-                "Give a brief summary.",
-
-                "What are the important points?",
-
-                "What are the key takeaways?"
-
-            ]
-
-            
-
-        questions = []
-
-        for line in response.text.split("\n"):
-
-            line = line.strip()
-
-            if line:
-
-                line = line.replace("-", "")
-                line = line.replace("*", "")
+            # FIX: moved cleanup here, before returning
+            questions = []
+            for line in response.text.split("\n"):
                 line = line.strip()
+                if line:
+                    line = line.replace("-", "").replace("*", "").strip()
+                    questions.append(line)
+            return questions[:4]
 
-                questions.append(line)
-
-        return questions[:4]
+        except Exception as e:
+            print("QUESTION ERROR", e)
+            return [
+                "What is this document about?",
+                "Give a brief summary.",
+                "What are the important points?",
+                "What are the key takeaways?"
+            ]

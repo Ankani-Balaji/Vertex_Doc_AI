@@ -1,3 +1,4 @@
+# app.py
 from flask import Flask, flash, redirect
 from config import Config
 from routes.upload import upload_bp

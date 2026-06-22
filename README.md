@@ -1,3 +1,4 @@
+<!-- README.md -->
 # 📄 VertexDoc AI – Intelligent Document Assistant
 
 ## Overview

@@ -1,3 +1,4 @@
+# summary_service.py
 import os
 
 from dotenv import load_dotenv
@@ -39,7 +40,7 @@ class SummaryService:
 
     Document:
 
-    {text[:12000]}
+    {text[:3000]}
     """
 
         try:
@@ -51,7 +52,18 @@ class SummaryService:
 
             return response.text
 
-        except Exception:
+        # except Exception:
+
+        #     return (
+        #         "⚠ AI Summary is temporarily unavailable because "
+        #         "the Gemini API quota has been reached."
+        #     )
+        except Exception as e:
+
+            print("=" * 50)
+            print("SUMMARY ERROR")
+            print(e)
+            print("=" * 50)
 
             return (
                 "⚠ AI Summary is temporarily unavailable because "

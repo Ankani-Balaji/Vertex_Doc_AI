@@ -1,3 +1,5 @@
+#chat_service.py
+
 import os
 
 from dotenv import load_dotenv
@@ -81,9 +83,13 @@ class ChatService:
 
             return response.text
 
-        except Exception:
+        except Exception as e:
+
+            print("=" * 50)
+            print("CHAT ERROR")
+            print(e)
+            print("=" * 50)
 
             return (
-                "⚠️ AI service is temporarily unavailable or the free "
-                "Gemini quota has been exceeded. Please try again later."
+                "⚠️ AI service is temporarily unavailable."
             )
