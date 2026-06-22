@@ -1,44 +1,15 @@
 # rag_service.py
 import os
-import requests
-import numpy as np
-
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain_core.embeddings import Embeddings
+from langchain_google_genai import GoogleGenerativeAIEmbeddings
 
 VECTOR_ROOT = "vector_store"
 
-# Automatically uses local model on your PC, HF API on Render
-USE_LOCAL = os.getenv("USE_LOCAL_EMBEDDINGS", "false").lower() == "true"
-
-if USE_LOCAL:
-    from langchain_huggingface import HuggingFaceEmbeddings
-    embedding_model = HuggingFaceEmbeddings(
-        model_name="sentence-transformers/all-MiniLM-L6-v2"
-    )
-else:
-    class HuggingFaceAPIEmbeddings(Embeddings):
-
-        def embed_documents(self, texts):
-            return [self._embed(t) for t in texts]
-
-        def embed_query(self, text):
-            return self._embed(text)
-
-        def _embed(self, text):
-            response = requests.post(
-                "https://api-inference.huggingface.co/pipeline/feature-extraction/sentence-transformers/all-MiniLM-L6-v2",
-                headers={"Authorization": f"Bearer {os.getenv('HF_API_KEY')}"},
-                json={"inputs": text, "options": {"wait_for_model": True}}
-            )
-            result = response.json()
-            arr = np.array(result)
-            if arr.ndim == 2:
-                arr = arr.mean(axis=0)
-            return arr.tolist()
-
-    embedding_model = HuggingFaceAPIEmbeddings()
+embedding_model = GoogleGenerativeAIEmbeddings(
+    model="models/embedding-001",
+    google_api_key=os.getenv("GOOGLE_API_KEY")
+)
 
 
 class RAGService:
