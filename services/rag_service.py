@@ -1,16 +1,33 @@
 # rag_service.py
 import os
+from google import genai
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
-from langchain_google_genai import GoogleGenerativeAIEmbeddings
+from langchain_core.embeddings import Embeddings
 
 VECTOR_ROOT = "vector_store"
 
+client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
 
-embedding_model = GoogleGenerativeAIEmbeddings(
-    model="text-embedding-004",   
-    google_api_key=os.getenv("GOOGLE_API_KEY")
-)
+
+class GoogleGenAIEmbeddings(Embeddings):
+
+    def embed_documents(self, texts):
+        return [self._embed(t) for t in texts]
+
+    def embed_query(self, text):
+        return self._embed(text)
+
+    def _embed(self, text):
+        result = client.models.embed_content(
+            model="text-embedding-004",
+            contents=text
+        )
+        return result.embeddings[0].values
+
+
+embedding_model = GoogleGenAIEmbeddings()
+
 
 class RAGService:
 
