@@ -8,8 +8,10 @@ from langchain_core.embeddings import Embeddings
 
 VECTOR_ROOT = "vector_store"
 
-client = genai.Client(api_key=os.getenv("GOOGLE_API_KEY"))
-
+client = genai.Client(
+    api_key=os.getenv("GOOGLE_API_KEY"),
+    http_options={"api_version": "v1"}
+)
 
 class GoogleGenAIEmbeddings(Embeddings):
 
@@ -21,11 +23,8 @@ class GoogleGenAIEmbeddings(Embeddings):
 
     def _embed(self, text):
         result = client.models.embed_content(
-            model="gemini-embedding-exp-03-07",
-            contents=text,
-            config=types.EmbedContentConfig(
-                task_type="RETRIEVAL_DOCUMENT"
-            )
+            model="text-embedding-004",
+            contents=text
         )
         return result.embeddings[0].values
 
