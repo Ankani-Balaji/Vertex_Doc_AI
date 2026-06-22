@@ -23,7 +23,7 @@ class GoogleGenAIEmbeddings(Embeddings):
 
     def _embed(self, text):
         result = client.models.embed_content(
-            model="text-embedding-004",
+            model="text-embedding-001",
             contents=text
         )
         return result.embeddings[0].values
