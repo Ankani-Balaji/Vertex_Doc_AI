@@ -7,7 +7,7 @@ from langchain_google_genai import GoogleGenerativeAIEmbeddings
 VECTOR_ROOT = "vector_store"
 
 embedding_model = GoogleGenerativeAIEmbeddings(
-    model="models/embedding-001",
+    model="models/embedding-004",
     google_api_key=os.getenv("GOOGLE_API_KEY")
 )
 
