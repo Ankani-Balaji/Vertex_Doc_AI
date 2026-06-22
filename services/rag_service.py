@@ -1,16 +1,14 @@
 # rag_service.py
 import os
-from google import genai
+import google.generativeai as genai
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_community.vectorstores import FAISS
 from langchain_core.embeddings import Embeddings
 
 VECTOR_ROOT = "vector_store"
 
-client = genai.Client(
-    api_key=os.getenv("GOOGLE_API_KEY"),
-    http_options={"api_version": "v1"}
-)
+genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
+
 
 class GoogleGenAIEmbeddings(Embeddings):
 
@@ -21,11 +19,12 @@ class GoogleGenAIEmbeddings(Embeddings):
         return self._embed(text)
 
     def _embed(self, text):
-        result = client.models.embed_content(
-            model="text-embedding-004",
-            contents=text
+        result = genai.embed_content(
+            model="models/embedding-001",
+            content=text,
+            task_type="retrieval_document"
         )
-        return result.embeddings[0].values
+        return result["embedding"]
 
 
 embedding_model = GoogleGenAIEmbeddings()
