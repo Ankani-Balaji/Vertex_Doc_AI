@@ -18,6 +18,7 @@ from flask import (
     flash,
     current_app,
     session,
+    jsonify,
 )
 
 from werkzeug.utils import secure_filename
@@ -184,6 +185,32 @@ def ask_question():
     session["history"] = history[-5:]
 
     return redirect("/")
+
+@upload_bp.route("/api/ask", methods=["POST"])
+def api_ask_question():
+    """JSON endpoint used by the chat UI for real-time, no-reload answers."""
+
+    if "session_id" not in session:
+        return jsonify({"error": "Session expired. Please reload the page."}), 400
+
+    question = (request.form.get("question") or "").strip()
+
+    if not question:
+        return jsonify({"error": "Please enter a question."}), 400
+
+    if not session.get("uploaded_file"):
+        return jsonify({"error": "Please upload a document first."}), 400
+
+    try:
+        answer = ChatService.ask_question(question, session["session_id"])
+    except Exception:
+        answer = "⚠️ AI service is temporarily unavailable. Please try again."
+
+    history = session.get("history", [])
+    history.append({"question": question, "answer": answer})
+    session["history"] = history[-5:]
+
+    return jsonify({"question": question, "answer": answer})
 
 @upload_bp.route("/export/txt")
 def export_txt():
