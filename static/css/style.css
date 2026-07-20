@@ -218,7 +218,7 @@ a { color: inherit; }
   padding-left: 18px;
   font-size: 13px;
   color: var(--text-dim);
-  line-height: 1.7;
+  line-height: 3;
 }
 .how-it-works strong { color: var(--ink); }
 
